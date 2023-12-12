@@ -3,6 +3,11 @@ package advent_of_code_2023;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
 public class Day12 {
@@ -135,6 +140,111 @@ public class Day12 {
         }
 
         return result;
+    }
+
+    static long place(List<Integer> rem, int ri, int si, String l) {
+        if (si > l.length()) {
+            return 0L;
+        }
+
+        if (si == l.length()) {
+            return ri == rem.size() ? 1L : 0L;
+        }
+
+        if (ri == rem.size()) {
+            for (int i = si; i < l.length(); i++) {
+                if (l.charAt(i) == '#') {
+                    return 0L;
+                }
+            }
+
+            return 1L;
+        }
+
+        var r = rem.get(ri);
+
+        if (si + r > l.length()) {
+            return 0L;
+        }
+
+        final var c = l.charAt(si);
+        var mustPlace = c == '#';
+
+        var canPlace = true;
+        for (int i = 0; i < r; i++) {
+            canPlace = canPlace && l.charAt(si + i) != '.';
+        }
+
+//        var res = 0L;
+        if (canPlace) {
+            if (si + r == l.length()) {
+                return place(rem, ri + 1, si + r, l) + (mustPlace ? 0L : place(rem, ri, si + 1, l));
+//                return place(rem, ri + 1, si + r, l);// + place(rem, ri, si + 1, l);
+            } else if (l.charAt(si + r) != '#') {
+                return place(rem, ri + 1, si + r + 1, l) + (mustPlace ? 0L : place(rem, ri, si + 1, l));
+                //                return place(rem, ri + 1, si + r + 1, l) + place(rem, ri, si + 1, l);
+            }
+        }
+
+        return mustPlace ? 0L : place(rem, ri, si + 1, l);
+
+//        if (mustPlace) {
+//            return res;
+//        }
+
+//        return res + place(rem, ri, si + 1, l);
+    }
+
+    static long part3(String[] input) {
+        final var result = new AtomicLong(0L);
+        final var done = new AtomicInteger(0);
+
+        var ii = 1;
+
+        var e = Executors.newVirtualThreadPerTaskExecutor();
+
+        for (var line : input) {
+            var start = System.currentTimeMillis();
+            var parts = line.split(" ");
+            var nrTemp = Arrays.stream(parts[1].split(","))
+                    .map(Integer::parseInt)
+                    .toList();
+
+            ArrayList<Integer> numbers = new ArrayList<>(nrTemp.size() *5);
+
+            for (int i = 0; i < 5; i++) {
+                numbers.addAll(nrTemp);
+            }
+
+
+            String part = parts[0];
+            var string = "";
+            for (int i = 0; i < 4; i++) {
+                string += part + "?";
+            }
+            string += part;
+
+            final var s = string;
+            e.execute(() -> {
+                var r = place(numbers, 0, 0, s);
+                result.addAndGet(r);
+                System.out.printf("%s of %s done%n", done.incrementAndGet(), input.length);
+            });
+
+//            System.out.println(r);
+//
+//            System.out.println("%s / %s: %s".formatted(ii++, input.length, (System.currentTimeMillis() - start) / 60000));
+//            System.out.println("");
+//            result += r;
+        }
+
+        try {
+            e.awaitTermination(1, TimeUnit.DAYS);
+        } catch (InterruptedException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return result.get();
     }
 
 }
