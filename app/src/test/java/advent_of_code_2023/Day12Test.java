@@ -47,6 +47,12 @@ r = 1
 
     @Test
     void solve_part2() {
+        // This will take forever, not the right approach...
+        assertEquals(-1, Day12.part3(Util.INSTANCE.readFile("day12")));
+    }
+
+    @Test
+    void solve_part2_3() {
         assertEquals(-1, Day12.part3(Util.INSTANCE.readFile("day12")));
     }
 

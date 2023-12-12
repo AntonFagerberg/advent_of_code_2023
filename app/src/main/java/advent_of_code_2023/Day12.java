@@ -3,13 +3,13 @@ package advent_of_code_2023;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
+// This solution is a mess, and it's slooooow (it's not the right approach) - but it worked so moving on... ¯\_(ツ)_/¯
 public class Day12 {
 
     static boolean partialValid(String input, List<Integer> target) {
@@ -44,20 +44,19 @@ public class Day12 {
                 .filter(i -> i != 0)
                 .toList();
 
-
         if (target.size() != t.size()) {
-//            System.out.println("%s -> %s".formatted(input, "size"));
+            //            System.out.println("%s -> %s".formatted(input, "size"));
             return false;
         }
 
         for (int i = 0; i < target.size(); i++) {
             if (!t.get(i).equals(target.get(i))) {
-//                System.out.println("%s -> %s".formatted(input, "list"));
+                //                System.out.println("%s -> %s".formatted(input, "list"));
                 return false;
             }
         }
 
-//        System.out.println("%s -> %s".formatted(input, true));
+        //        System.out.println("%s -> %s".formatted(input, true));
         return true;
     }
 
@@ -79,7 +78,7 @@ public class Day12 {
                     return Stream.of(s);
                 });
 
-        return permutations(l, i+1, target, max);
+        return permutations(l, i + 1, target, max);
     }
 
     static long part1(String[] input) {
@@ -91,13 +90,13 @@ public class Day12 {
                     .map(Integer::parseInt)
                     .toList();
 
-//            System.out.println(" => " + parts[0]);
+            //            System.out.println(" => " + parts[0]);
 
             var r = permutations(Stream.of(parts[0]), 0, numbers, parts[0].length())
                     .filter(s -> valid(s, numbers))
                     .count();
 
-//            System.out.println(r);
+            //            System.out.println(r);
             result += r;
         }
 
@@ -114,12 +113,11 @@ public class Day12 {
                     .map(Integer::parseInt)
                     .toList();
 
-            ArrayList<Integer> numbers = new ArrayList<>(nrTemp.size() *5);
+            ArrayList<Integer> numbers = new ArrayList<>(nrTemp.size() * 5);
 
             for (int i = 0; i < 5; i++) {
                 numbers.addAll(nrTemp);
             }
-
 
             String part = parts[0];
             var string = "";
@@ -142,17 +140,17 @@ public class Day12 {
         return result;
     }
 
-    static long place(List<Integer> rem, int ri, int si, String l) {
-        if (si > l.length()) {
+    static long place(List<Integer> rem, int ri, int si, String l, int ll, int rr) {
+        if (si > ll) {
             return 0L;
         }
 
-        if (si == l.length()) {
-            return ri == rem.size() ? 1L : 0L;
+        if (si == ll) {
+            return ri == rr ? 1L : 0L;
         }
 
-        if (ri == rem.size()) {
-            for (int i = si; i < l.length(); i++) {
+        if (ri == rr) {
+            for (int i = si; i < ll; i++) {
                 if (l.charAt(i) == '#') {
                     return 0L;
                 }
@@ -161,61 +159,65 @@ public class Day12 {
             return 1L;
         }
 
+        final var c = l.charAt(si);
+        if (c == '.') {
+            return place(rem, ri, si + 1, l, ll, rr);
+        }
+
         var r = rem.get(ri);
 
-        if (si + r > l.length()) {
+        if (si + r > ll) {
             return 0L;
         }
 
-        final var c = l.charAt(si);
         var mustPlace = c == '#';
 
         var canPlace = true;
         for (int i = 0; i < r; i++) {
-            canPlace = canPlace && l.charAt(si + i) != '.';
+            canPlace = l.charAt(si + i) != '.';
+            if (!canPlace) {
+                break;
+            }
         }
 
-//        var res = 0L;
+        //        var res = 0L;
         if (canPlace) {
-            if (si + r == l.length()) {
-                return place(rem, ri + 1, si + r, l) + (mustPlace ? 0L : place(rem, ri, si + 1, l));
-//                return place(rem, ri + 1, si + r, l);// + place(rem, ri, si + 1, l);
+            if (si + r == ll) {
+                return place(rem, ri + 1, si + r, l, ll, rr) + (mustPlace ? 0L : place(rem, ri, si + 1, l, ll, rr));
+                //                return place(rem, ri + 1, si + r, l);// + place(rem, ri, si + 1, l);
             } else if (l.charAt(si + r) != '#') {
-                return place(rem, ri + 1, si + r + 1, l) + (mustPlace ? 0L : place(rem, ri, si + 1, l));
+                return place(rem, ri + 1, si + r + 1, l, ll, rr) + (mustPlace ? 0L : place(rem, ri, si + 1, l, ll, rr));
                 //                return place(rem, ri + 1, si + r + 1, l) + place(rem, ri, si + 1, l);
             }
         }
 
-        return mustPlace ? 0L : place(rem, ri, si + 1, l);
+        return mustPlace ? 0L : place(rem, ri, si + 1, l, ll, rr);
 
-//        if (mustPlace) {
-//            return res;
-//        }
+        //        if (mustPlace) {
+        //            return res;
+        //        }
 
-//        return res + place(rem, ri, si + 1, l);
+        //        return res + place(rem, ri, si + 1, l);
     }
 
     static long part3(String[] input) {
         final var result = new AtomicLong(0L);
         final var done = new AtomicInteger(0);
 
-        var ii = 1;
-
-        var e = Executors.newVirtualThreadPerTaskExecutor();
+        var e = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
         for (var line : input) {
-            var start = System.currentTimeMillis();
+
             var parts = line.split(" ");
             var nrTemp = Arrays.stream(parts[1].split(","))
                     .map(Integer::parseInt)
                     .toList();
 
-            ArrayList<Integer> numbers = new ArrayList<>(nrTemp.size() *5);
+            ArrayList<Integer> numbers = new ArrayList<>(nrTemp.size() * 5);
 
             for (int i = 0; i < 5; i++) {
                 numbers.addAll(nrTemp);
             }
-
 
             String part = parts[0];
             var string = "";
@@ -226,19 +228,23 @@ public class Day12 {
 
             final var s = string;
             e.execute(() -> {
-                var r = place(numbers, 0, 0, s);
-                result.addAndGet(r);
-                System.out.printf("%s of %s done%n", done.incrementAndGet(), input.length);
+                var start = System.currentTimeMillis();
+                var r = place(numbers, 0, 0, s, s.length(), numbers.size());
+                var i = done.incrementAndGet();
+                var l = result.addAndGet(r);
+                System.out.printf("%s of %s done (%s) %s%n", i, input.length, l,
+                        (System.currentTimeMillis() - start) / (60 * 1000));
             });
 
-//            System.out.println(r);
-//
-//            System.out.println("%s / %s: %s".formatted(ii++, input.length, (System.currentTimeMillis() - start) / 60000));
-//            System.out.println("");
-//            result += r;
+            //            System.out.println(r);
+            //
+            //            System.out.println("%s / %s: %s".formatted(ii++, input.length, (System.currentTimeMillis() - start) / 60000));
+            //            System.out.println("");
+            //            result += r;
         }
 
         try {
+            e.shutdown();
             e.awaitTermination(1, TimeUnit.DAYS);
         } catch (InterruptedException ex) {
             throw new RuntimeException(ex);
