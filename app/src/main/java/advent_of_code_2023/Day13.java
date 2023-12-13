@@ -89,8 +89,59 @@ public class Day13 {
         }
         blocks.add(current);
 
-        int i = 0;
+        var nope = new ArrayList<String>();
+        for (var b : blocks) {
+            System.out.println("---");
+            for (var y = 1; y < b.size(); y++) {
+                boolean m = true;
+                for (var yy = 0; yy < b.size() - 1; yy++) {
+                    try {
+                        if (!b.get(y + yy).equals(b.get(y - (yy + 1)))) {
+                            m = false;
+                            break;
+                        }
+                    } catch (IndexOutOfBoundsException e) {
 
+                    }
+                }
+
+                if (m) {
+//                    System.out.println("y: " + y);
+                    nope.add("y="+y);
+                }
+
+//                System.out.println(y + " -> " + m);
+            }
+
+            for (var x = 1; x < b.get(0).length(); x++) {
+                boolean m = true;
+                for (var xx = 0; xx < b.get(0).length() - 1; xx++) {
+                    try {
+                        for (String s : b) {
+                            if (s.charAt(x + xx) != s.charAt(x - (xx + 1))) {
+                                m = false;
+                                break;
+                            }
+                        }
+                    } catch (StringIndexOutOfBoundsException e) {
+//                        System.out.println(e);
+                    }
+
+//                    if (!m) {
+//                        break;
+//                    }
+                }
+
+//                System.out.println(x + " -> " + m);
+
+                if (m) {
+                    nope.add("x="+x);
+                }
+            }
+        }
+
+        int i = 0;
+        var k = 0;
         for (var bb : blocks) {
             for (int xd = 0; xd < bb.getFirst().length(); xd++) {
                 for (int yd = 0; yd < bb.size(); yd++) {
@@ -128,8 +179,10 @@ public class Day13 {
                         }
 
                         if (m) {
-                            System.out.println("y: " + y);
-                            i += y * 100;
+                            if (!nope.get(k).equals("y="+y)) {
+                                System.out.println("y: " + y);
+                                i += y * 100;
+                            }
                         }
 
 //                System.out.println(y + " -> " + m);
@@ -157,15 +210,18 @@ public class Day13 {
 //                System.out.println(x + " -> " + m);
 
                         if (m) {
-                            System.out.println("x: " + x);
-                            i += x;
+                            if (!nope.get(k).equals("x="+x)) {
+                                System.out.println("x: " + x);
+                                i += x;
+                            }
                         }
                     }
                 }
             }
+            k++;
         }
 
-        return i;
+        return i / 2;
     }
 
 }
