@@ -1,8 +1,6 @@
 package advent_of_code_2023;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -140,23 +138,42 @@ public class Day12 {
         return result;
     }
 
-    static long place(List<Integer> rem, int ri, int si, String l, int ll, int rr) {
+    static Map<String, Long> cache = new HashMap<>();
+
+    static long place(List<Integer> rem, int ri, int si, String l, int ll, int rr, List<Integer> sums) {
+        var cKey = "%s|%s|%s|%s".formatted(rem, si, ri, l);
+
+        var cV = cache.get(cKey);
+
+        if (cV != null) {
+            return cV;
+        }
+
         if (si > ll) {
             return 0L;
         }
 
         if (si == ll) {
-            return ri == rr ? 1L : 0L;
+            var xxx =  ri == rr ? 1L : 0L;
+            cache.put(cKey, xxx);
+            return xxx;
         }
 
         if (ri == rr) {
             for (int i = si; i < ll; i++) {
                 if (l.charAt(i) == '#') {
+                    cache.put(cKey, 0L);
                     return 0L;
                 }
             }
 
+            cache.put(cKey, 1L);
             return 1L;
+        }
+
+        if (sums.get(ri) > ll - si + 1) {
+            cache.put(cKey, 0L);
+            return 0L;
         }
 
         // look ahead - does not need to be recalculated...
@@ -183,7 +200,7 @@ public class Day12 {
         final var c = l.charAt(si);
         int si1 = si + 1;
         if (c == '.') {
-            return place(rem, ri, si1, l, ll, rr);
+            return place(rem, ri, si1, l, ll, rr, sums);
         }
 
         var r = rem.get(ri);
@@ -205,18 +222,30 @@ public class Day12 {
         }
 
         //        var res = 0L;
+        var rrr = 0L;
         if (canPlace) {
             int ri1 = ri + 1;
             if (i1 == ll) {
-                return place(rem, ri1, i1, l, ll, rr) + (mustPlace ? 0L : place(rem, ri, si1, l, ll, rr));
+                rrr = place(rem, ri1, i1, l, ll, rr, sums);// + (mustPlace ? 0L : place(rem, ri, si1, l, ll, rr, sums));
                 //                return place(rem, ri + 1, si + r, l);// + place(rem, ri, si + 1, l);
             } else if (l.charAt(i1) != '#') {
-                return place(rem, ri1, si + r + 1, l, ll, rr) + (mustPlace ? 0L : place(rem, ri, si1, l, ll, rr));
+                rrr = place(rem, ri1, si + r + 1, l, ll, rr, sums);/// + (mustPlace ? 0L : place(rem, ri, si1, l, ll, rr, sums));
                 //                return place(rem, ri + 1, si + r + 1, l) + place(rem, ri, si + 1, l);
             }
         }
 
-        return mustPlace ? 0L : place(rem, ri, si1, l, ll, rr);
+        if (mustPlace) {
+            cache.put(cKey, rrr);
+            return rrr;
+        }
+
+        var rk = rrr + place(rem, ri, si1, l, ll, rr, sums);
+        cache.put(cKey, rk);
+        return rk;
+
+
+
+//        return mustPlace ? 0L : place(rem, ri, si1, l, ll, rr, sums);
 
         //        if (mustPlace) {
         //            return res;
@@ -240,9 +269,16 @@ public class Day12 {
                     .toList();
 
             ArrayList<Integer> numbers = new ArrayList<>(nrTemp.size() * 5);
+            ArrayList<Integer> sums = new ArrayList<>(nrTemp.size() * 5);
 
             for (int i = 0; i < 5; i++) {
                 numbers.addAll(nrTemp);
+            }
+
+            var sumz = 0;
+            for (var n : numbers.reversed()) {
+                sumz += n;
+                sums.add(sumz);
             }
 
             String part = parts[0];
@@ -257,7 +293,7 @@ public class Day12 {
             e.execute(() -> {
                 var iiii = iii;
                 var start = System.currentTimeMillis();
-                var r = place(numbers, 0, 0, s, s.length(), numbers.size());
+                var r = place(numbers, 0, 0, s, s.length(), numbers.size(), sums.reversed());
                 var i = done.incrementAndGet();
                 var l = result.addAndGet(r);
                 System.out.printf("%s of %s done %s = %s (%s) %s%n", i, input.length, iiii, r, l,

@@ -50,5 +50,10 @@ r = 1
         // This will take forever, not the right approach...
         assertEquals(-1, Day12.part3(Util.INSTANCE.readFile("day12")));
     }
+    @Test
+    void solve_part2_hack() {
+        // This will take forever, not the right approach...
+        assertEquals(-1, Day12.part3(new String[] { "?????????.???? 1,1,3,1" }));
+    }
 
 }
