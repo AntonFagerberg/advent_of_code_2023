@@ -1,9 +1,7 @@
 package advent_of_code_2023;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.stream.Collectors;
 
 public class Day14 {
 
@@ -183,164 +181,47 @@ public class Day14 {
     }
 
     static int part2(String[] input) {
-//        var cubes = new HashSet<String>();
-//        var rounds = new HashSet<String>();
-//
-//        for (int i = 0; i < 1; i++) {
-//            var yMax = input.length;
-//            var xMax = input[0].length();
-//
-//            for (int y = 0; y < input.length; y++) {
-//                for (int x = 0; x < input[y].length(); x++) {
-//                    if (input[y].charAt(x) == '#') {
-//                        cubes.add(toKey(x, y));
-//                    } else if (input[y].charAt(x) == 'O') {
-//                        rounds.add(toKey(x, y));
-//                    }
-//                }
-//            }
-//
-//            var roundsNext = new HashSet<String>();
-//
-//            for (int x = 0; x < xMax; x++) {
-//                int y = 0;
-//                int i = -1;
-//                while (true) {
-//                    if (y == yMax) {
-//                        break;
-//                    }
-//
-//                    String key = toKey(x, y);
-//                    if (rounds.contains(key)) {
-//                        i++;
-//                    }
-//
-//                    if (cubes.contains(key)) {
-//                        break;
-//                    }
-//
-//                    y++;
-//                }
-//
-//                for (; i >= 0; i--) {
-//                    roundsNext.add(toKey(x, i));
-//                }
-//            }
-//
-//            for (var line : cubes) {
-//                var cX = xKey(line);
-//                var cY = yKey(line);
-//
-//                var y = cY + 1;
-//                int i = -1;
-//                while (true) {
-//                    if (y >= yMax) {
-//                        break;
-//                    }
-//                    String key = toKey(cX, y);
-//                    if (rounds.contains(key)) {
-//                        i++;
-//                    }
-//
-//                    if (cubes.contains(key)) {
-//                        break;
-//                    }
-//
-//                    y++;
-//                }
-//
-//                for (; i >= 0; i--) {
-//                    roundsNext.add(toKey(cX, cY + 1 + i));
-//                }
-//            }
-//
-//            var result = 0;
+        var originalInput = input;
 
         var cache = new HashMap<String, Integer>();
+        var maxCycles = 1000000000;
+        int cycleLength = 0;
+        int seen = -1;
+        int i = 0;
+        while (i != maxCycles) {
+            input = rotate(tilt(input));
+            input = rotate(tilt(input));
+            input = rotate(tilt(input));
+            input = rotate(tilt(input));
 
-//        var t = 1000000000;
-//        for (int i = 0; i < t; i++) {
-////            if (i % 10000 == 0) {
-////                System.out.println((i / (float)t)*100);
-////            }
-//            input = rotate(tilt(input));
-//            input = rotate(tilt(input));
-//            input = rotate(tilt(input));
-//            input = rotate(tilt(input));
-//
-//            var s = Arrays.stream(input).collect(Collectors.joining("\n"));
-//            if (!cache.containsKey(s)) {
-//                cache.put(s, i);
-//            } else {
-//                System.out.println("Found: %s, (%s)".formatted(cache.get(s), i));
-//            }
-//
-//            if (i > 1000) {
-//                break;
-//            }
-//        }
+            var gridAsLine = String.join("\n", input);
+            if (!cache.containsKey(gridAsLine)) {
+                cache.put(gridAsLine, i);
+            } else {
+                int cachedValue = cache.get(gridAsLine);
+                if (seen == cachedValue) {
+                    break;
+                } else if (seen == -1) {
+                    seen = cachedValue;
+                }
 
-        /**
-         * shell> (1011-1000) % 6
-         * $53 ==> 5
-         *
-         * jshell> (1011-1000) % 8
-         * $54 ==> 3
-         *
-         * jshell> (1013-1000) % 8
-         * $55 ==> 5
-         *
-         * jshell> (1157-1000) % 8
-         * $56 ==> 5
-         *
-         * jshell> (1017 - 996)
-         * $57 ==> 21
-         *
-         * jshell> (1017 - 996) % 6
-         * $58 ==> 3
-         *
-         * jshell> (1017 - 996)
-         * $59 ==> 21
-         *
-         * jshell> (1017 - 996) % 7
-         * $60 ==> 0
-         *
-         * jshell> (1017 - 996) % 7 + 2
-         * $61 ==> 2
-         *
-         * jshell> (1069 - 996) % 7 + 2
-         * $62 ==> 5
-         *
-         * jshell> (1000000000 - 996) % 7 + 2
-         * $63 ==> 6
-         *
-         * jshell> (655 - 634) % (183-175) + 175
-         * $64 ==> 180
-         *
-         * jshell> (655 - 634) % (183-175 + 1) + 175
-         * $65 ==> 178
-         *
-         * jshell> (654 - 634) % (183-175 + 1) + 175
-         * $66 ==> 177
-         *
-         * jshell> (658 - 634) % (183-175 + 1) + 175
-         * $67 ==> 181
-         *
-         * jshell> (1000000000 - 634) % (183-175 + 1) + 175
-         * $68 ==> 181
-         */
+                cycleLength++;
+            }
 
-        for (int i = 0; i < 181; i++) {
+            i++;
+        }
+
+        var magicNr = (1000000000 - seen) % cycleLength + seen;
+
+        input = originalInput;
+
+        for (int j = 0; j < magicNr; j++) {
             input = rotate(tilt(input));
             input = rotate(tilt(input));
             input = rotate(tilt(input));
             input = rotate(tilt(input));
         }
 
-//        input = tilt(input);
-//
-//        Arrays.stream(input).forEach(System.out::println);
-//
         int result = 0;
 
         for (int y = 0; y < input.length; y++) {
@@ -351,41 +232,7 @@ public class Day14 {
             }
         }
 
-
-
-//        1000 -> 6
-//
-//        System.out.println("---");
-//
-//        input = rotate(input);
-//        input = rotate(input);
-//        input = rotate(input);
-//        input = rotate(input);
-//
-//        Arrays.stream(input).forEach(System.out::println);
-
         return result;
-
-
-//
-//        for (int y = 0; y < input.length; y++) {
-//            for (int x = 0; x < input[y].length(); x++) {
-//                if (roundsNext.contains(toKey(x, y))) {
-//                    System.out.print('0');
-//                } else if (cubes.contains(toKey(x, y))) {
-//                    System.out.print('#');
-//                } else {
-//                    System.out.print('.');
-//                }
-//            }
-//            System.out.println();
-//        }
-
-//            for (var e : roundsNext) {
-//                result += yMax - yKey(e);
-//            }
-
-//            return result;
     }
 
 }
