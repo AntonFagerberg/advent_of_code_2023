@@ -28,18 +28,29 @@ public class Day17Test {
 
     @Test
     void solve_part1() {
-        // 894 too high
-        assertEquals(-1, Day17.part1(Util.INSTANCE.readFile("day17")));
+        assertEquals(859, Day17.part1(Util.INSTANCE.readFile("day17")));
     }
 
     @Test
     void solve_part2_example() {
-        assertEquals(-1, Day17.part2(input.split("\n")));
+        assertEquals(94, Day17.part2(input.split("\n")));
+    }
+
+    @Test
+    void solve_part2_example2() {
+        var input = """
+                111111111111
+                999999999991
+                999999999991
+                999999999991
+                999999999991""";
+        assertEquals(71, Day17.part2(input.split("\n")));
     }
 
     @Test
     void solve_part2() {
-        assertEquals(-1, Day17.part2(Util.INSTANCE.readFile("day17")));
+        // 1018 too low
+        assertEquals(1027, Day17.part2(Util.INSTANCE.readFile("day17")));
     }
 
 }
