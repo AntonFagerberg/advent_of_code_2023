@@ -99,6 +99,8 @@ public class Day18 {
             var x3 = coordinates.get(i - 1).getFirst();
             var y3 = coordinates.get(i - 1).getLast();
 
+            // This depends on how the polygon is built - so it doesn't work on part 1
+            // Too tired to fix.
             if (dx > 0 && dy > 0) {
                 enclosingPolygon.add(List.of(x3 + 1, y3));
             } else if (dx > 0 && dy < 0) {
