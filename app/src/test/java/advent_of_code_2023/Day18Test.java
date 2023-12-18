@@ -6,6 +6,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Day18Test {
 
+    /*
+
+    #######
+    #.....#
+    ###...#
+    ..#...#
+    ..#...#
+    ###.###
+    #...#..
+    ##..###
+    .#....#
+    .######
+
+     */
     String input = """
             R 6 (#70c710)
             D 5 (#0dc571)
@@ -33,8 +47,7 @@ public class Day18Test {
 
     @Test
     void solve_part1() {
-        // No? 8899
-        assertEquals(8899, Day18.part1(Util.INSTANCE.readFile("day18")));
+        assertEquals(39194, Day18.part3(Util.INSTANCE.readFile("day18")));
     }
 
     @Test
