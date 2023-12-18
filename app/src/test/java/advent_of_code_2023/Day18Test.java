@@ -1,25 +1,11 @@
 package advent_of_code_2023;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 public class Day18Test {
 
-    /*
-
-    #######
-    #.....#
-    ###...#
-    ..#...#
-    ..#...#
-    ###.###
-    #...#..
-    ##..###
-    .#....#
-    .######
-
-     */
     String input = """
             R 6 (#70c710)
             D 5 (#0dc571)
@@ -40,14 +26,10 @@ public class Day18Test {
     void solve_part1_example() {
         assertEquals(62, Day18.part1(input.split("\n")));
     }
-    @Test
-    void solve_part1_example2() {
-        assertEquals(62, Day18.part3(input.split("\n")));
-    }
 
     @Test
     void solve_part1() {
-        assertEquals(39194, Day18.part3(Util.INSTANCE.readFile("day18")));
+        assertEquals(39194, Day18.part1(Util.INSTANCE.readFile("day18")));
     }
 
     @Test
@@ -57,7 +39,7 @@ public class Day18Test {
 
     @Test
     void solve_part2() {
-        assertEquals(-1, Day18.part2(Util.INSTANCE.readFile("day18")));
+        assertEquals(78242031808225L, Day18.part2(Util.INSTANCE.readFile("day18")));
     }
 
 }
