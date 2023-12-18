@@ -3,13 +3,14 @@ package advent_of_code_2023;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
-// This solution is a mess, and it's slooooow (it's not the right approach) - but it worked so moving on... ¯\_(ツ)_/¯
+// Don't use this, I hacked this and did manual calculations to get the result...
 public class Day12 {
 
     static boolean partialValid(String input, List<Integer> target) {
@@ -159,25 +160,9 @@ public class Day12 {
             return 1L;
         }
 
-        // look ahead - does not need to be recalculated...
-//        boolean seenDot = false;
-//        var ii = 0;
-//        for (int i = si; i < ll; i++) {
-//            if (!seenDot) {
-//                if (l.charAt(i) != '#') {
-//                    seenDot = true;
-//                }
-//            } else {
-//                if (l.charAt(i) == '#') {
-//                    ii++;
-//                    seenDot = false;
-//                }
-//            }
-//
-//            if (ii > rr - ri) {
-//                return 0L;
-//            }
-//        }
+        if (rr - ri > 2*(ll - si)) {
+            return 0L;
+        }
 
 
         final var c = l.charAt(si);
@@ -205,18 +190,31 @@ public class Day12 {
         }
 
         //        var res = 0L;
+        long a = 0;
         if (canPlace) {
             int ri1 = ri + 1;
             if (i1 == ll) {
-                return place(rem, ri1, i1, l, ll, rr) + (mustPlace ? 0L : place(rem, ri, si1, l, ll, rr));
+                a = place(rem, ri1, i1, l, ll, rr);// + (mustPlace ? 0L : place(rem, ri, si1, l, ll, rr));
                 //                return place(rem, ri + 1, si + r, l);// + place(rem, ri, si + 1, l);
             } else if (l.charAt(i1) != '#') {
-                return place(rem, ri1, si + r + 1, l, ll, rr) + (mustPlace ? 0L : place(rem, ri, si1, l, ll, rr));
+                a = place(rem, ri1, si + r + 1, l, ll, rr);// + (mustPlace ? 0L : place(rem, ri, si1, l, ll, rr));
                 //                return place(rem, ri + 1, si + r + 1, l) + place(rem, ri, si + 1, l);
             }
+
+//            if (mustPlace) {
+//                return a;
+//            }
+
+//            return a + place(rem, ri, si1, l, ll, rr);
         }
 
-        return mustPlace ? 0L : place(rem, ri, si1, l, ll, rr);
+        if (mustPlace) {
+            return a;
+        }
+
+        return a + place(rem, ri, si1, l, ll, rr);
+
+//        return mustPlace ? 0L : place(rem, ri, si1, l, ll, rr);
 
         //        if (mustPlace) {
         //            return res;
@@ -241,13 +239,15 @@ public class Day12 {
 
             ArrayList<Integer> numbers = new ArrayList<>(nrTemp.size() * 5);
 
-            for (int i = 0; i < 5; i++) {
+            var copies = 5;
+
+            for (int i = 0; i < copies; i++) {
                 numbers.addAll(nrTemp);
             }
 
             String part = parts[0];
             var string = "";
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < copies-1; i++) {
                 string += part + "?";
             }
             string += part;
@@ -275,12 +275,86 @@ public class Day12 {
 
         try {
             e.shutdown();
-            e.awaitTermination(1, TimeUnit.DAYS);
+            e.awaitTermination(100, TimeUnit.DAYS);
         } catch (InterruptedException ex) {
             throw new RuntimeException(ex);
         }
 
         return result.get();
+    }
+
+    /*
+    ?????????.???? 1,1,3,1
+    2 -> 6878
+    3 -> 1477765
+    4 -> 354800406
+
+    1477765 / 6878 = 214,8538819424
+    354800406 / 1477765 = 240,09257628919
+
+    1477765 - 6878 = 1 470 887
+    354800406 - 1477765 = 353 322 641
+
+
+
+43758*17383860
+    ????????????? 1,1,1,2
+    2 -> 43758
+    3 -> 17383860
+    4 -> 7307872110 (15min)
+
+45 -> 2
+????????????????????????????????????????????? ->     21
+?????????????????????????????????????????????? ->    231
+??????????????????????????????????????????????? ->   1771
+???????????????????????????????????????????????? ->  10626
+????????????????????????????????????????????????? -> 53130
+?????????????????????????????????????????????????? -> 230230
+
+n		a(n)
+20		1
+45 21		21
+46 22		231
+47 23		1771
+48 24		10626
+49 25		53130
+50 26		230230
+51 27		888030
+52 28		3108105
+53 29		10015005
+54 30		30045015
+55 31		84672315
+56 32		225792840
+57 33		573166440
+58 34		1391975640
+59 35		3247943160
+60 36		7307872110
+61 37		15905368710
+62 38		33578000610
+63 39		68923264410
+64 40		137846528820
+65 41		269128937220
+66 42		513791607420
+67 43		960566918220
+68 44		1761039350070
+
+bin(45,20) = 3169870830126 !!!
+
+
+45 - 69 = -24
+     */
+
+    // 408) ????????????? 1,1,1,2 -> 3169870830126
+    // 775) ?????????.???? 1,1,3,1
+    public static void main(String[] args) {
+        // ?????????????
+        // ?????????????????????????????????????????????????????????????????????
+        // ????????????????????????????????????????????????????????????????????? -> l=69
+
+        // 4x -> 329280
+
+        var s = new String[]{"?????????.???? 1,1,3,1"};
+        System.out.println(part3(s));
     }
 
 }

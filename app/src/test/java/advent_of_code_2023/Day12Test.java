@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+// Don't use this, I hacked this and did manual calculations to get the result...
 public class Day12Test {
 
     String input = """
@@ -27,6 +28,12 @@ public class Day12Test {
 si = 0
 r = 1
 
+.???#?#?#????? 9,1
+
+?????????? 1,2,2
+
+?????????????????????????????? 1,2,2,1,2,2,1,2,2
+
 
      */
 
@@ -49,6 +56,14 @@ r = 1
     void solve_part2() {
         // This will take forever, not the right approach...
         assertEquals(-1, Day12.part3(Util.INSTANCE.readFile("day12")));
+    }
+
+    @Test
+    void solve_part2_3() {
+        // 659790265069 too low
+        final var day12 = Day12.part3(Util.INSTANCE.readFile("day12"));
+        System.out.println(day12);
+        assertEquals(-1, day12);
     }
 
 }
