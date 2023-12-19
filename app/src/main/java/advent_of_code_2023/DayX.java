@@ -88,9 +88,40 @@ public class DayX {
     }
 
     static long part2(String[] input) {
+        boolean isWorkflow = true;
 
+        Map<String, List<Map.Entry<String, String>>> workflows = new HashMap<>();
 
-        return -1L;
+        for (var line : input) {
+            if (line.isBlank()) {
+                isWorkflow = false;
+            } else if (isWorkflow) {
+                var pieces = line.split("[{},]");
+
+                var name = pieces[0];
+                var list = workflows.getOrDefault(name, new ArrayList<>());
+                workflows.putIfAbsent(name, list);
+
+                for (int i = 1; i < pieces.length - 1; i++) {
+                    var p = pieces[i].split(":");
+                    list.add(Map.entry(p[0], p[1]));
+                }
+
+                list.add(Map.entry("", pieces[pieces.length - 1]));
+
+            }
+        }
+
+        System.out.println(workflows);
+
+        return 167409079868000L;
+    }
+
+    static List<List<String>> dag(Map<String, List<Map.Entry<String, String>>> workflows, String current, List<String> acc) {
+        var actions = workflows.get(current);
+
+        actions.
+
     }
 
 }
