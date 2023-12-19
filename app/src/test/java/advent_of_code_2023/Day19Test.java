@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-public class DayXTest {
+public class Day19Test {
 
     String input = """
             px{a<2006:qkq,m>2090:A,rfg}
@@ -27,24 +27,24 @@ public class DayXTest {
 
     @Test
     void solve_part1_example() {
-        assertEquals(19114, DayX.part1(input.split("\n")));
+        assertEquals(19114, Day19.part1(input.split("\n")));
     }
 
     @Test
     void solve_part1() {
-        assertEquals(263678, DayX.part1(Util.INSTANCE.readFile("dayX")));
+        assertEquals(263678, Day19.part1(Util.INSTANCE.readFile("day19")));
     }
 
     @Test
     void solve_part2_example() {
-        assertEquals(167409079868000L, DayX.part2(input.split("\n")));
+        assertEquals(167409079868000L, Day19.part2(input.split("\n")));
     }
 
     @Test
     void solve_part2() {
         // 167409079868000 too high
         // 167409079868000
-        assertEquals(125455345557345L, DayX.part2(Util.INSTANCE.readFile("dayX")));
+        assertEquals(125455345557345L, Day19.part2(Util.INSTANCE.readFile("day19")));
     }
 
 }
