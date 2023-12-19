@@ -42,7 +42,9 @@ public class DayXTest {
 
     @Test
     void solve_part2() {
-        assertEquals(-1, DayX.part2(Util.INSTANCE.readFile("dayX")));
+        // 167409079868000 too high
+        // 167409079868000
+        assertEquals(125455345557345L, DayX.part2(Util.INSTANCE.readFile("dayX")));
     }
 
 }
