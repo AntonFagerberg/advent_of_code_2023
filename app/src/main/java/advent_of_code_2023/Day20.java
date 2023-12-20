@@ -3,7 +3,7 @@ package advent_of_code_2023;
 import java.util.*;
 import java.util.function.Predicate;
 
-public class DayX {
+public class Day20 {
 
     static long part1(String[] input) {
         var connection = new HashMap<String, List<String>>();
@@ -50,8 +50,8 @@ public class DayX {
         }
 
         var state = new LinkedList<String>();
-        var highCount = 0;
-        var lowCount = 0;
+        var highCount = 0L;
+        var lowCount = 0L;
 
         for (int c = 1; c <= 1000; c++) {
             state.add("broadcaster|%s|button".formatted(false));
@@ -68,36 +68,30 @@ public class DayX {
                     lowCount++;
                 }
 
-                if (name.equals("output")) {
-                } else {
-                    var flipFlopIsHigh = flipFlopState.get(name);
-                    var cState = conjunctionState.get(name);
-                    var connections = connection.get(name);
+                var flipFlopIsHigh = flipFlopState.get(name);
+                var cState = conjunctionState.get(name);
+                var connections = connection.get(name);
 
 
-                    if (flipFlopIsHigh != null) {
-                        if (!isHigh) {
-                            flipFlopState.put(name, !flipFlopIsHigh);
-                            connections.forEach(next -> state.addLast("%s|%s|%s".formatted(next, !flipFlopIsHigh, name)));
-                        }
-                    } else if (cState != null) {
-                        var sender = parts[2];
-                        cState.put(sender, isHigh);
-
-                        var allHigh = cState.values().stream().reduce(true, (a, b) -> a && b);
-
-                        connections.forEach(next -> state.addLast("%s|%s|%s".formatted(next, !allHigh, name)));
-                    } else if (connections != null) {
-                        connections.forEach(next -> state.addLast("%s|%s|%s".formatted(next, isHigh, name)));
+                if (flipFlopIsHigh != null) {
+                    if (!isHigh) {
+                        flipFlopState.put(name, !flipFlopIsHigh);
+                        connections.forEach(next -> state.addLast("%s|%s|%s".formatted(next, !flipFlopIsHigh, name)));
                     }
+                } else if (cState != null) {
+                    var sender = parts[2];
+                    cState.put(sender, isHigh);
+
+                    var allHigh = cState.values().stream().reduce(true, (a, b) -> a && b);
+
+                    connections.forEach(next -> state.addLast("%s|%s|%s".formatted(next, !allHigh, name)));
+                } else if (connections != null) {
+                    connections.forEach(next -> state.addLast("%s|%s|%s".formatted(next, isHigh, name)));
                 }
             }
         }
 
-        long sum = highCount * lowCount;
-        System.out.println("high: %s, low: %s, sum: %s".formatted(highCount, lowCount, sum));
-
-        return sum;
+        return highCount * lowCount;
     }
 
     static long part2(String[] input) {
@@ -144,6 +138,19 @@ public class DayX {
             }
         }
 
+        var keepTrack = new HashMap<String, Long>();
+        keepTrack.put("rx", -1L);
+
+        while (keepTrack.size() < 2) {
+            var keySet = Set.copyOf(keepTrack.keySet());
+            keepTrack.clear();
+            for (var e : connection.entrySet()) {
+                if (keySet.stream().anyMatch(e.getValue()::contains)) {
+                    keepTrack.put(e.getKey(), -1L);
+                }
+            }
+        }
+
         var state = new LinkedList<String>();
         long result = -1;
         long count = 0;
@@ -157,38 +164,61 @@ public class DayX {
                 var name = parts[0];
                 var isHigh = Boolean.parseBoolean(parts[1]);
 
-                if (name.equals("output")) { // remove?
-
-                } else {
-                    var flipFlopIsHigh = flipFlopState.get(name);
-                    var cState = conjunctionState.get(name);
-                    var connections = connection.get(name);
+                var flipFlopIsHigh = flipFlopState.get(name);
+                var cState = conjunctionState.get(name);
+                var connections = connection.get(name);
 
 
-                    if (flipFlopIsHigh != null) {
-                        if (!isHigh) {
-                            flipFlopState.put(name, !flipFlopIsHigh);
-                            connections.forEach(next -> state.addLast("%s|%s|%s".formatted(next, !flipFlopIsHigh, name)));
+                if (flipFlopIsHigh != null) {
+                    if (!isHigh) {
+                        flipFlopState.put(name, !flipFlopIsHigh);
+                        connections.forEach(next -> state.addLast("%s|%s|%s".formatted(next, !flipFlopIsHigh, name)));
+                    }
+                } else if (cState != null) {
+                    var sender = parts[2];
+                    cState.put(sender, isHigh);
+
+                    var allHigh = cState.values().stream().reduce(true, (a, b) -> a && b);
+
+                    connections.forEach(next -> state.addLast("%s|%s|%s".formatted(next, !allHigh, name)));
+                } else if (connections != null) {
+                    connections.forEach(next -> state.addLast("%s|%s|%s".formatted(next, isHigh, name)));
+                } else if (name.equals("rx")) {
+
+                    for (var and : keepTrack.keySet()) {
+                        if (keepTrack.get(and) <= 0 && !conjunctionState.get(and).values().stream().reduce(true, (a, b) -> a && b)) {
+                            keepTrack.put(and, count);
                         }
-                    } else if (cState != null) {
-                        var sender = parts[2];
-                        cState.put(sender, isHigh);
+                    }
 
-                        var allHigh = cState.values().stream().reduce(true, (a, b) -> a && b);
-
-                        connections.forEach(next -> state.addLast("%s|%s|%s".formatted(next, !allHigh, name)));
-                    } else if (connections != null) {
-                        connections.forEach(next -> state.addLast("%s|%s|%s".formatted(next, isHigh, name)));
-                    } else if (name.equals("rx")) {
-                        if (!isHigh) {
-                            result = count;
-                        }
+                    if (keepTrack.values().stream().noneMatch(nr -> nr <= 0)) {
+                        result = lcmRec(keepTrack.values().toArray(new Long[0]));
                     }
                 }
             }
         }
 
         return result;
+    }
+
+    public static long lcmRec(Long[] numbers) {
+        if (numbers.length == 2) {
+            return lcm(numbers[0], numbers[1]);
+        } else {
+            return lcm(numbers[0], lcmRec(Arrays.copyOfRange(numbers, 1, numbers.length)));
+        }
+    }
+
+    public static long lcm(long x, long y) {
+        long max = Math.max(x, y);
+        long min = Math.min(x, y);
+        long lcm = max;
+
+        while (lcm % min != 0) {
+            lcm += max;
+        }
+
+        return lcm;
     }
 
 }
