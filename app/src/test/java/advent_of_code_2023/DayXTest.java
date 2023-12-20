@@ -33,4 +33,9 @@ public class DayXTest {
         assertEquals(-1, DayX.part2(Util.INSTANCE.readFile("dayX")));
     }
 
+    @Test
+    void solve_part2_2() {
+        assertEquals(-1, DayX.part2(Util.INSTANCE.readFile("dayX")));
+    }
+
 }
