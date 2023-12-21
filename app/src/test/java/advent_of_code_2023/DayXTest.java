@@ -19,6 +19,22 @@ public class DayXTest {
             .##..##.##.
             ...........""";
 
+    /*
+
+    ......................
+    .....###.#.
+    .###.##.O#.
+    .O#O#O.O#..
+    O.O.#.#.O..
+    .##O.O####.
+    .##.O#O..#.
+    .O.O.O.##..
+    .##.#.####.
+    .##O.##.##.
+    ...........
+
+     */
+
     @Test
     void solve_part1_example() {
         assertEquals(16, DayX.part1(input.split("\n"), 6));
