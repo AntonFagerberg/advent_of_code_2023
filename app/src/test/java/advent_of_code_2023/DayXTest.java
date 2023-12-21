@@ -51,6 +51,7 @@ public class DayXTest {
 //            System.out.println("%s: %s".formatted(i, DayX.part2(input.split("\n"), i)));
 //        }
 
+//        System.getenv().putIfAbsent("DEBUG", "true");
 //        assertEquals(16, DayX.part2(input.split("\n"), 6));
 //        assertEquals(50, DayX.part2(input.split("\n"), 10));
         assertEquals(1594, DayX.part2(input.split("\n"), 50));
