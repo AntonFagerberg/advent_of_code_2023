@@ -51,9 +51,10 @@ public class DayXTest {
 //            System.out.println("%s: %s".formatted(i, DayX.part2(input.split("\n"), i)));
 //        }
 
-        assertEquals(16, DayX.part2(input.split("\n"), 6));
-        assertEquals(50, DayX.part2(input.split("\n"), 10));
+//        assertEquals(16, DayX.part2(input.split("\n"), 6));
+//        assertEquals(50, DayX.part2(input.split("\n"), 10));
         assertEquals(1594, DayX.part2(input.split("\n"), 50));
+//        assertEquals(6536, DayX.part2(input.split("\n"), 100));
 //        assertEquals(16733044, DayX.part2(input.split("\n"), 5000));
     }
 

@@ -132,6 +132,20 @@ public class DayX {
         return visited;
     }
 
+    static class Magic implements Comparable<Magic> {
+
+        int x;
+        int y;
+        int steps;
+        int xO;
+        int yO;
+
+        @Override
+        public int compareTo(final Magic o) {
+            return Integer.compare(steps, o.steps);
+        }
+    }
+
     static long part2(String[] input, int steps) {
         result.clear();
 
@@ -205,6 +219,8 @@ public class DayX {
         //        var result = 0;
         //        Map<Map.Entry<Integer, Integer>, Integer> positions = new HashMap<>();
 
+        var q = new PriorityQueue<Magic>();
+
         for (var e : visited.entrySet()) {
             var length = e.getValue();
             var key = e.getKey();
@@ -214,18 +230,43 @@ public class DayX {
             if (length <= steps && length % 2 == steps % 2) {
                 result.add("%s,%s,%s,%s".formatted(x, y, 0, 0));
             }
-//            } else {
-                //                wasHere.put("%s,%s,%s,%s".formatted(x, y, 0, 0), false);
-//            }
 
             if (x == 0) {
-                walk(edges, xMax - 1, y, -1, 0, xMax, yMax, steps, length + 1);
+                var m = new Magic();
+                m.x = xMax - 1;
+                m.y = y;
+                m.xO = -1;
+                m.yO = 0;
+                m.steps = length + 1;
+                q.add(m);
+                //                walk(edges, xMax - 1, y, -1, 0, xMax, yMax, steps, length + 1);
             } else if (x == xMax - 1) {
-                walk(edges, 0, y, 1, 0, xMax, yMax, steps, length + 1);
+                var m = new Magic();
+                m.x = 0;
+                m.y = y;
+                m.xO = 1;
+                m.yO = 0;
+                m.steps = length + 1;
+                q.add(m);
+                //                walk(edges, 0, y, 1, 0, xMax, yMax, steps, length + 1);
             } else if (y == 0) {
-                walk(edges, x, yMax - 1, 0, -1, xMax, yMax, steps, length + 1);
+                var m = new Magic();
+                m.x = x;
+                m.y = yMax - 1;
+                m.xO = 0;
+                m.yO = -1;
+                m.steps = length + 1;
+                q.add(m);
+                //                walk(edges, x, yMax - 1, 0, -1, xMax, yMax, steps, length + 1);
             } else if (y == yMax - 1) {
-                walk(edges, x, 0, 0, 1, xMax, yMax, steps, length + 1);
+                var m = new Magic();
+                m.x = x;
+                m.y = 0;
+                m.xO = 0;
+                m.yO = 1;
+                m.steps = length + 1;
+                q.add(m);
+                //                walk(edges, x, 0, 0, 1, xMax, yMax, steps, length + 1);
             }
 
             //                for (int xn = -1; xn <= 1; xn++) {
@@ -253,6 +294,70 @@ public class DayX {
             //                    }
             //                }
             //            }
+        }
+
+        var cache = new HashMap<String, Integer>();
+
+        while (!q.isEmpty()) {
+            var next = q.poll();
+
+            final var cachedValue = cache.get("%s,%s,%s,%s".formatted(next.x, next.y, next.xO, next.yO));
+            if (next.steps > steps || (cachedValue != null /*&& cachedValue <= next.steps*/)) {
+
+            } else {
+                cache.put("%s,%s,%s,%s".formatted(next.x, next.y, next.xO, next.yO), next.steps);
+
+                var position = edges.get(Map.entry(next.x, next.y));
+
+                for (var e : position.entrySet()) {
+                    final var xx = e.getKey().getKey();
+                    final var yy = e.getKey().getValue();
+
+                    var length = next.steps + e.getValue();
+
+                    if (length <= steps && length % 2 == steps % 2) {
+                        result.add("%s,%s,%s,%s".formatted(xx, yy, next.xO, next.yO));
+                    }
+
+                    if (xx == 0) {
+                        var m = new Magic();
+                        m.x = xMax - 1;
+                        m.y = yy;
+                        m.xO = next.xO - 1;
+                        m.yO = next.yO;
+                        m.steps = length + 1;
+                        q.add(m);
+                        //                        walk(edges, xMax - 1, yy, xOff - 1, yOff, xMax, yMax, steps, length + 1);
+                    } else if (xx == xMax - 1) {
+                        var m = new Magic();
+                        m.x = 0;
+                        m.y = yy;
+                        m.xO = next.xO + 1;
+                        m.yO = next.yO;
+                        m.steps = length + 1;
+                        q.add(m);
+                        //                        walk(edges, 0, yy, xOff + 1, yOff, xMax, yMax, steps, length + 1);
+                    } else if (yy == 0) {
+                        var m = new Magic();
+                        m.x = xx;
+                        m.y = yMax - 1;
+                        m.xO = next.xO;
+                        m.yO = next.yO - 1;
+                        m.steps = length + 1;
+                        q.add(m);
+                        //                        walk(edges, xx, yMax - 1, xOff, yOff - 1, xMax, yMax, steps, length + 1);
+                    } else if (yy == yMax - 1) {
+                        var m = new Magic();
+                        m.x = xx;
+                        m.y = 0;
+                        m.xO = next.xO;
+                        m.yO = next.yO + 1;
+                        m.steps = length + 1;
+                        q.add(m);
+                        //                        walk(edges, xx, 0, xOff, yOff + 1, xMax, yMax, steps, length + 1);
+                    }
+                }
+            }
         }
 
         //        visited.forEach((k,v ) -> System.out.println("%s,%s -> %s".formatted(k.getKey(), k.getValue(), v)));
@@ -303,18 +408,24 @@ public class DayX {
         //            }
         //            //            System.out.println();
         //        }
+        for (int yO = -10; yO <= 10; yO++) {
+            for (int y = 0; y < input.length; y++) {
+                for (int xO = -10; xO <= 10; xO++) {
+                    System.out.print(" ");
+                    for (int x = 0; x < input[y].length(); x++) {
+                        if (result.contains("%s,%s,%s,%s".formatted(x, y, xO, yO))) {
+                            System.out.print('O');
+                        } else {
+                            final var c = input[y].charAt(x);
+                            System.out.print(c == 'S' ? '.' : c);
 
-//        for (int y = 0; y < input.length; y++) {
-//            for (int x = 0; x < input[y].length(); x++) {
-//                if (wasHere.containsKey("%s,%s,%s,%s".formatted(x, y, 0, 0))) {
-//                    System.out.print('O');
-//                } else {
-//                    System.out.print(input[y].charAt(x));
-//
-//                }
-//            }
-//            System.out.println();
-//        }
+                        }
+                    }
+                }
+                System.out.println();
+            }
+                    System.out.println();
+        }
 
         //        System.out.println("--- " + wasHere.size() + " ---");
         //        wasHere.stream().filter(s -> !s.endsWith(",0,0")).forEach(System.out::println);
@@ -323,82 +434,63 @@ public class DayX {
 
         //        wasHere.keySet().stream().sorted().forEach(System.out::println);
 
+        result.stream().sorted().forEach(System.out::println);
+
         return result.size();
 
     }
 
     static Set<String> result = new HashSet<>();
-    static Set<String> visited = new HashSet<>();
+    static Map<String, Integer> record = new HashMap<>();
 
-    static void walk(Map<Map.Entry<Integer, Integer>, Map<Map.Entry<Integer, Integer>, Integer>> edges,
-            int x, int y,
-            int xOff, int yOff,
-            int xMax, int yMax,
-            int steps, int lengthAcc) {
-
-        if (xOff == 0 && yOff == 0) {
-            return;
-        }
-
-        if (result.contains("%s,%s,%s,%s".formatted(x, y, xOff, yOff))) {
-            return;
-        }
-
-        if (lengthAcc > steps) {
-            return;
-        }
-
-        var position = edges.get(Map.entry(x, y));
-
-        //        if (position == null) {
-        //            return;
-        //        }
-
-        //        System.out.println("%s,%s = %s", x, y, e.);
-
-        for (var e : position.entrySet()) {
-            //            if (e.getValue() > 0) {
-            final var xx = e.getKey().getKey();
-            final var yy = e.getKey().getValue();
-
-            var length = lengthAcc + e.getValue();
-            //            if (length <= steps) {
-            if (length <= steps && length % 2 == steps % 2) {
-//                System.out.println("%s,%s [%s,%s] -> %s".formatted(xx, yy, xOff, yOff, length));
-                result.add("%s,%s,%s,%s".formatted(xx, yy, xOff, yOff));
-            } else {
-                //                    wasHere.put("%s,%s,%s,%s".formatted(xx, yy, xOff, yOff), false);
-            }
-
-            if (xx == 0) {
-                walk(edges, xMax - 1, yy, xOff - 1, yOff, xMax, yMax, steps, length + 1);
-            } else if (xx == xMax - 1) {
-                walk(edges, 0, yy, xOff + 1, yOff, xMax, yMax, steps, length + 1);
-            } else if (yy == 0) {
-                walk(edges, xx, yMax - 1, xOff, yOff - 1, xMax, yMax, steps, length + 1);
-            } else if (yy == yMax - 1) {
-                walk(edges, xx, 0, xOff, yOff + 1, xMax, yMax, steps, length + 1);
-            }
-
-            //                    System.out.println(
-            //                            "=> %s, %s (%s, %s) [%s, %s] = %s (%s)".formatted(x, y, xx, yy, xOff, yOff, length, e.getValue()));
-            //            }
-            //            }
-        }
-
-        //        System.out.println("---");
-
-        //        var more = new ArrayList<Map.Entry<Integer, Integer>>();
-        //
-        //        int c = 0;
-        //        for (var e : position.entrySet()) {
-        //            if (remaining - e.getValue() >= 0) {
-        //                c += e.getValue() + walk(edges, e.getKey().getKey(), e.getKey().getValue(), steps, remaining - e.getValue());
-        //            }
-        //        }
-        //
-        //
-        //        System.out.println("%s,%s = %s (%s)".formatted(x, y, remaining, steps));
-    }
+    //    static void walk(Map<Map.Entry<Integer, Integer>, Map<Map.Entry<Integer, Integer>, Integer>> edges,
+    //            int x, int y,
+    //            int xOff, int yOff,
+    //            int xMax, int yMax,
+    //            int steps, int lengthAcc) {
+    //
+    //        if (xOff == 0 && yOff == 0) {
+    //            return;
+    //        }
+    //        //        final var mapKey = "%s,%s,%s,%s".formatted(x, y, xOff, yOff);
+    //        //
+    //        //        final var min = record.get(mapKey);
+    //        //
+    //        //        if (min != null && lengthAcc > min) {
+    //        //            return;
+    //        //        }
+    //        //
+    //        //        record.put(mapKey, lengthAcc);
+    //
+    //        //        if (result.contains(mapKey)) {
+    //        //            return;
+    //        //        }
+    //
+    //        if (lengthAcc > steps) {
+    //            return;
+    //        }
+    //
+    //        var position = edges.get(Map.entry(x, y));
+    //
+    //        for (var e : position.entrySet()) {
+    //            final var xx = e.getKey().getKey();
+    //            final var yy = e.getKey().getValue();
+    //
+    //            var length = lengthAcc + e.getValue();
+    //            if (length <= steps && length % 2 == steps % 2) {
+    //                result.add("%s,%s,%s,%s".formatted(xx, yy, xOff, yOff));
+    //            }
+    //
+    //            if (xx == 0) {
+    //                walk(edges, xMax - 1, yy, xOff - 1, yOff, xMax, yMax, steps, length + 1);
+    //            } else if (xx == xMax - 1) {
+    //                walk(edges, 0, yy, xOff + 1, yOff, xMax, yMax, steps, length + 1);
+    //            } else if (yy == 0) {
+    //                walk(edges, xx, yMax - 1, xOff, yOff - 1, xMax, yMax, steps, length + 1);
+    //            } else if (yy == yMax - 1) {
+    //                walk(edges, xx, 0, xOff, yOff + 1, xMax, yMax, steps, length + 1);
+    //            }
+    //        }
+    //    }
 
 }
