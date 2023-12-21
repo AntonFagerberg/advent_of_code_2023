@@ -31,12 +31,19 @@ public class DayXTest {
 
     @Test
     void solve_part2_example() {
-        assertEquals(-1, DayX.part2(input.split("\n")));
+//        for (int i = 1; i  < 250; i++) {
+//            System.out.println("%s: %s".formatted(i, DayX.part2(input.split("\n"), i)));
+//        }
+
+        assertEquals(16, DayX.part2(input.split("\n"), 6));
+        assertEquals(50, DayX.part2(input.split("\n"), 10));
+        assertEquals(1594, DayX.part2(input.split("\n"), 50));
+//        assertEquals(16733044, DayX.part2(input.split("\n"), 5000));
     }
 
     @Test
     void solve_part2() {
-        assertEquals(-1, DayX.part2(Util.INSTANCE.readFile("dayX")));
+        assertEquals(-1, DayX.part2(Util.INSTANCE.readFile("dayX"), 1));
     }
 
 }
