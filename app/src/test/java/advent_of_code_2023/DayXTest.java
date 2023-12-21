@@ -7,16 +7,26 @@ import org.junit.jupiter.api.Test;
 public class DayXTest {
 
     String input = """
-            """;
+            ...........
+            .....###.#.
+            .###.##..#.
+            ..#.#...#..
+            ....#.#....
+            .##..S####.
+            .##..#...#.
+            .......##..
+            .##.#.####.
+            .##..##.##.
+            ...........""";
 
     @Test
     void solve_part1_example() {
-        assertEquals(-1, DayX.part1(input.split("\n")));
+        assertEquals(16, DayX.part1(input.split("\n"), 6));
     }
 
     @Test
     void solve_part1() {
-        assertEquals(-1, DayX.part1(Util.INSTANCE.readFile("dayX")));
+        assertEquals(3600, DayX.part1(Util.INSTANCE.readFile("dayX"), 64));
     }
 
     @Test
