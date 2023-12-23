@@ -42,12 +42,12 @@ public class DayXTest {
     }
 
     @Test
-    void solve_part2_example() {
+    void solve_part2_example() throws InterruptedException {
         assertEquals(154, DayX.part2(input.split("\n")));
     }
 
     @Test
-    void solve_part2() {
+    void solve_part2() throws InterruptedException {
         // 4722 too low
         // 5515 too low
         assertEquals(-1, DayX.part2(Util.INSTANCE.readFile("dayX")));
