@@ -7,11 +7,33 @@ import org.junit.jupiter.api.Test;
 public class DayXTest {
 
     String input = """
-            """;
+            #.#####################
+            #.......#########...###
+            #######.#########.#.###
+            ###.....#.>.>.###.#.###
+            ###v#####.#v#.###.#.###
+            ###.>...#.#.#.....#...#
+            ###v###.#.#.#########.#
+            ###...#.#.#.......#...#
+            #####.#.#.#######.#.###
+            #.....#.#.#.......#...#
+            #.#####.#.#.#########v#
+            #.#...#...#...###...>.#
+            #.#.#v#######v###.###v#
+            #...#.>.#...>.>.#.###.#
+            #####v#.#.###v#.#.###.#
+            #.....#...#...#.#.#...#
+            #.#########.###.#.#.###
+            #...###...#...#...#.###
+            ###.###.#.###v#####v###
+            #...#...#.#.>.>.#.>.###
+            #.###.###.#.###.#.#v###
+            #.....###...###...#...#
+            #####################.#""";
 
     @Test
     void solve_part1_example() {
-        assertEquals(-1, DayX.part1(input.split("\n")));
+        assertEquals(94, DayX.part1(input.split("\n")));
     }
 
     @Test
@@ -21,11 +43,13 @@ public class DayXTest {
 
     @Test
     void solve_part2_example() {
-        assertEquals(-1, DayX.part2(input.split("\n")));
+        assertEquals(154, DayX.part2(input.split("\n")));
     }
 
     @Test
     void solve_part2() {
+        // 4722 too low
+        // 5515 too low
         assertEquals(-1, DayX.part2(Util.INSTANCE.readFile("dayX")));
     }
 
