@@ -187,7 +187,7 @@ public class DayX {
 //        }
 //    }
 
-    static class Position {
+    static class Position implements Comparable<Position> {
         Node node;
         Set<Node> history;
         int length;
@@ -207,6 +207,11 @@ public class DayX {
             }
             p.length = length + i;
             return p;
+        }
+
+        @Override
+        public int compareTo(Position o) {
+            return Integer.compare(length, o.length);
         }
     }
 
@@ -255,44 +260,65 @@ public class DayX {
             }
         }
 
-        var q = new Stack<Position>();
+        var q = new PriorityQueue<Position>();
+        q.add(new Position(nodeMap.get(Map.entry(1, 0))));
+        var r = 0;
 
-        q.addFirst(new Position(nodeMap.get(Map.entry(1, 0))));
+        while (!q.isEmpty()) {
+            var p = q.poll();
 
-        AtomicInteger r = new AtomicInteger(0);
+            if (p.node.y == input.length - 1) {
+                r = Math.max(r, p.length);
+                System.out.println(r);
+            }
 
-        var es = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-
-        for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
-            es.execute(() -> {
-                while (!q.isEmpty()) {
-                    var p = q.removeFirst();
-
-                    if (p.node.y == input.length - 1) {
-                        var old = r.get();
-                        var rr = Math.max(old, p.length);
-
-                        while (!r.compareAndSet(old, rr)) {
-                            old = r.get();
-                            rr = Math.max(old, p.length);
-                        }
-
-                        System.out.println(rr);
-                    }
-
-                    for (var c : p.node.connections.entrySet()) {
-                        if (!p.history.contains(c.getKey())) {
-                            q.add(p.next(c.getKey()));
-                        }
-                    }
+            for (var c : p.node.connections.entrySet()) {
+                if (!p.history.contains(c.getKey())) {
+                    q.add(p.next(c.getKey()));
                 }
-            });
+            }
         }
-        es.shutdown();
-        es.awaitTermination(10, TimeUnit.DAYS);
+
+        return r-1;
+
+//        var q = new Stack<Position>();
+//
+//        q.addFirst(new Position(nodeMap.get(Map.entry(1, 0))));
+//
+//        AtomicInteger r = new AtomicInteger(0);
+//
+//        var es = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+//
+//        for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
+//            es.execute(() -> {
+//                while (!q.isEmpty()) {
+//                    var p = q.removeFirst();
+//
+//                    if (p.node.y == input.length - 1) {
+//                        var old = r.get();
+//                        var rr = Math.max(old, p.length);
+//
+//                        while (!r.compareAndSet(old, rr)) {
+//                            old = r.get();
+//                            rr = Math.max(old, p.length);
+//                        }
+//
+//                        System.out.println(rr);
+//                    }
+//
+//                    for (var c : p.node.connections.entrySet()) {
+//                        if (!p.history.contains(c.getKey())) {
+//                            q.add(p.next(c.getKey()));
+//                        }
+//                    }
+//                }
+//            });
+//        }
+//        es.shutdown();
+//        es.awaitTermination(10, TimeUnit.DAYS);
 
 
-        return r.get() - 1;
+//        return r.get() - 1;
 
 //        for (int y = 0; y < input.length; y++) {
 //            for (int x = 0; x < input[y].length(); x++) {
