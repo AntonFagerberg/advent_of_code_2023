@@ -15,7 +15,10 @@ repositories {
     mavenCentral()
 }
 
+
 dependencies {
+    implementation 'org.jgrapht:jgrapht-core:1.5.2'
+
     // Use JUnit Jupiter for testing.
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
 
