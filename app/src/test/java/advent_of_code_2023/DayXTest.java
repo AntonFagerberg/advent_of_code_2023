@@ -49,8 +49,40 @@ public class DayXTest {
     @Test
     void solve_part2() throws InterruptedException {
         // 4722 too low
-        // 5515 too low
+        // 5799 too low
         assertEquals(-1, DayX.part2(Util.INSTANCE.readFile("dayX")));
+    }
+
+    @Test
+    void solve_part2_old() throws InterruptedException {
+        // 4722 too low
+        // 5799 too low
+        // 6223 not right
+        assertEquals(-1, DayX.part2_old(Util.INSTANCE.readFile("dayX")));
+    }
+
+    @Test
+    void solve_part3() throws InterruptedException {
+        // 4722 too low
+        // 5799 too low
+        // 6075?
+        assertEquals(-1, DayX.part3(Util.INSTANCE.readFile("dayX")));
+    }
+
+    @Test
+    void solve_part4() throws InterruptedException {
+        // 4722 too low
+        // 5799 too low
+        // 6075?
+        assertEquals(-1, DayX.part3_old(Util.INSTANCE.readFile("dayX")));
+    }
+
+    @Test
+    void solve_part4_ex() throws InterruptedException {
+        // 4722 too low
+        // 5799 too low
+        // 6575 -> nope
+        assertEquals(154, DayX.part3_old(input.split("\n")));
     }
 
 }
